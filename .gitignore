@@ -3,5 +3,9 @@
 bin/
 obj/
 
+##String Conneciton for Database
 appsettings.json
+
+##Mac OS metadata
+.DS_Store
 
