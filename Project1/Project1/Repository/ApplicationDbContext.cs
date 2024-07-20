@@ -40,6 +40,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         entity.Property(u => u.FirstName).IsRequired();
         entity.Property(u => u.LastName).IsRequired();
         entity.Property(u => u.UserName).IsRequired();
+        
+        // Adding unique constraint on UserName, no two users can have the same username
+        entity.HasIndex(u => u.UserName).IsUnique();
 
         // Configuring one-to-one relationship between User and Login
         // Each User must have one Login, and each Login must have one User
@@ -63,6 +66,8 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         entity.Property(l => l.Username).IsRequired();
         entity.Property(l => l.Password).IsRequired();
         entity.Property(l => l.UserId).IsRequired();
+
+        
     });
 
     // Configuring the BookReview entity

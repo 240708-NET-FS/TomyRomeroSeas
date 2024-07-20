@@ -15,9 +15,6 @@ namespace ReviewShelf.DAO
         // Add a new Login to the database
         public void Create(Login item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             _context.Logins.Add(item);  
             _context.SaveChanges();     
         }
@@ -25,9 +22,6 @@ namespace ReviewShelf.DAO
         // Delete a Login from the database
         public void Delete(Login item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             _context.Logins.Remove(item);  
             _context.SaveChanges();       
         }
@@ -44,10 +38,10 @@ namespace ReviewShelf.DAO
         public Login GetById(int ID)
         {
             // Retrieves a Login entity with the specified ID from the database, including the related User entity
-            Login login = _context.Logins.Include(l => l.User).FirstOrDefault(l => l.LoginId == ID);
+            Login? login = _context.Logins.Include(l => l.User).FirstOrDefault(l => l.LoginId == ID);
 
             if (login == null)
-                throw new KeyNotFoundException($"Login with ID {ID} not found.");
+                throw new KeyNotFoundException($"Login with ID: {ID} not found.");
 
             return login;
         }
@@ -55,11 +49,9 @@ namespace ReviewShelf.DAO
         // Update an existing Login
         public void Update(Login newItem)
         {
-            if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem));
 
             // Retrieves the existing Login entity to be updated
-            Login originalLogin = _context.Logins.FirstOrDefault(l => l.LoginId == newItem.LoginId);
+            Login? originalLogin = _context.Logins.FirstOrDefault(l => l.LoginId == newItem.LoginId);
 
             if (originalLogin != null)
             {
@@ -82,15 +74,14 @@ namespace ReviewShelf.DAO
         // Retrieve a Login by username and password
         public Login GetLoginByUsernameAndPassword(string username, string password)
         {
-            if (username == null)
-                throw new ArgumentNullException(nameof(username));
-
-            if (password == null)
-                throw new ArgumentNullException(nameof(password));
-
             // Retrieves a Login entity with the specified username and password, including the related User entity
-            Login login = _context.Logins.Include(l => l.User)
+            Login? login = _context.Logins.Include(l => l.User)
                                         .FirstOrDefault(l => l.Username == username && l.Password == password);
+
+            if(login == null)
+            {
+                throw new KeyNotFoundException($"Login with {username} not found.");
+            }
 
             return login;
         }

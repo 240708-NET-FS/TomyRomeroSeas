@@ -14,9 +14,6 @@ namespace ReviewShelf.DAO
         //Add a new User to the database
         public void Create(User item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             _context.Users.Add(item);  
             _context.SaveChanges();    
         }
@@ -24,9 +21,6 @@ namespace ReviewShelf.DAO
         //Delete a User from the database
         public void Delete(User item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             _context.Users.Remove(item);  
             _context.SaveChanges();    
         }
@@ -55,8 +49,6 @@ namespace ReviewShelf.DAO
         // Update an existing User
         public void Update(User newItem)
         {
-            // Checks if the newItem is null and throws an exception if it is
-            ArgumentNullException.ThrowIfNull(newItem);
 
             // Retrieves the existing User entity to be updated
             var originalUser = _context.Users.FirstOrDefault(u => u.UserId == newItem.UserId);

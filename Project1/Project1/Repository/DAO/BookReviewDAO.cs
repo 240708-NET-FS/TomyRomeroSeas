@@ -15,9 +15,6 @@ namespace ReviewShelf.DAO
         // Create a new BookReview
         public void Create(BookReview item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             // Ensure the User associated with the BookReview exists
             var userExists = _context.Users.Any(u => u.UserId == item.UserId);
             if (!userExists)
@@ -30,9 +27,6 @@ namespace ReviewShelf.DAO
         // Delete a BookReview
         public void Delete(BookReview item)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-
             var existingReview = _context.BookReviews
                                           .Include(br => br.User)
                                           .FirstOrDefault(br => br.BookReviewId == item.BookReviewId);
@@ -66,9 +60,6 @@ namespace ReviewShelf.DAO
         // Update an existing BookReview
         public void Update(BookReview newItem)
         {
-            if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem));
-
             var existingReview = _context.BookReviews
                                           .Include(br => br.User)
                                           .FirstOrDefault(br => br.BookReviewId == newItem.BookReviewId);
