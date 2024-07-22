@@ -1,3 +1,4 @@
+using ReviewShelf.Utility.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using ReviewShelf.Entities;
 
@@ -80,7 +81,7 @@ namespace ReviewShelf.DAO
 
             if(login == null)
             {
-                throw new KeyNotFoundException($"Login with {username} not found.");
+                throw new LoginException($"(Failed Auth): Incorrect Username or Password.");
             }
 
             return login;

@@ -1,8 +1,10 @@
 using System;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore;
 using ReviewShelf.DAO;
 using ReviewShelf.Entities;
-using YourApp.Utility.Exceptions;
+using ReviewShelf.Utility.Exceptions;
+
 
 public class AccountService
 {
@@ -62,10 +64,14 @@ public class AccountService
                 // Complete the transaction
                 transaction.Complete();
             }
+            catch(UserCreationException ex)
+            {
+                throw new UserCreationException($"A user with this username already exists.", ex);
+            }
             catch (Exception ex)
             {
                 // Handle the exception (log it, etc.)
-                throw new UserCreationException("An error occurred while creating the user and login.", ex);
+                throw new UserCreationException($"An error occurred while creating the user and login.", ex);
             }
         }
     }

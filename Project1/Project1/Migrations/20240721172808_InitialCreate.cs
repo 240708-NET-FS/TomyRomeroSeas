@@ -18,7 +18,7 @@ namespace Project1.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,6 +76,12 @@ namespace Project1.Migrations
                 name: "IX_Logins_UserId",
                 table: "Logins",
                 column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserName",
+                table: "Users",
+                column: "UserName",
                 unique: true);
         }
 

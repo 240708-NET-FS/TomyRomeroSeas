@@ -1,4 +1,5 @@
 using ReviewShelf.Entities;
+using ReviewShelf.Utility.Exceptions;
 
 namespace ReviewShelf.DAO
 {
@@ -14,6 +15,14 @@ namespace ReviewShelf.DAO
         //Add a new User to the database
         public void Create(User item)
         {
+            // Check if a user with the same username already exists
+            bool usernameExists = _context.Users.Any(u => u.UserName == item.UserName);
+            
+            if (usernameExists)
+            {
+                throw new UserCreationException("A user with this username already exists.");
+            }
+
             _context.Users.Add(item);  
             _context.SaveChanges();    
         }
@@ -67,6 +76,17 @@ namespace ReviewShelf.DAO
                 // Throws an exception if the original User entity is not found
                 throw new KeyNotFoundException($"User with ID {newItem.UserId} not found.");
             }
+        }
+
+        // Retrieve a User by their username
+        public User GetByUsername(string username)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+
+            if (user == null)
+                throw new KeyNotFoundException($"User with username {username} not found.");
+
+            return user;
         }
     }
 }

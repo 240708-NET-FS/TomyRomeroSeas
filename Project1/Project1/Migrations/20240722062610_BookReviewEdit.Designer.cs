@@ -11,8 +11,8 @@ using ReviewShelf.Entities;
 namespace Project1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240719034834_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240722062610_BookReviewEdit")]
+    partial class BookReviewEdit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace Project1.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookReviewId"));
 
                     b.Property<string>("BookTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Genre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -95,9 +99,12 @@ namespace Project1.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

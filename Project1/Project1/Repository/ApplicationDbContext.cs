@@ -79,7 +79,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         entity.Property(br => br.BookTitle).IsRequired();
         entity.Property(br => br.Review).IsRequired();
         entity.Property(br => br.UserId).IsRequired();
-
+        entity.Property(br => br.Genre).IsRequired();
         // Configuring the many-to-one relationship between BookReview and User
         //BookReview can refernce its author
         entity.HasOne(br => br.User)

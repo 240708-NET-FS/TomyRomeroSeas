@@ -3,18 +3,18 @@ using System;
 namespace ReviewShelf.Utility.Exceptions
 {
     [Serializable]
-    public class UserCreationException : Exception
+    public class UserNotFoundException : Exception
     {
-        public UserCreationException()
+        public UserNotFoundException()
         {
         }
 
-        public UserCreationException(string message) 
+        public UserNotFoundException(string message) 
             : base(message)
         {
         }
 
-        public UserCreationException(string message, Exception innerException) 
+        public UserNotFoundException(string message, Exception innerException) 
             : base(message, innerException)
         {
         }

@@ -33,6 +33,10 @@ namespace Project1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Review")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -92,9 +96,12 @@ namespace Project1.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -125,8 +132,7 @@ namespace Project1.Migrations
                 {
                     b.Navigation("BookReviews");
 
-                    b.Navigation("Login")
-                        .IsRequired();
+                    b.Navigation("Login");
                 });
 #pragma warning restore 612, 618
         }

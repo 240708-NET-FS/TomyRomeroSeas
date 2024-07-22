@@ -11,8 +11,8 @@ using ReviewShelf.Entities;
 namespace Project1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240719180511_defaultDbValues")]
-    partial class defaultDbValues
+    [Migration("20240721172808_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,9 +95,12 @@ namespace Project1.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -128,8 +131,7 @@ namespace Project1.Migrations
                 {
                     b.Navigation("BookReviews");
 
-                    b.Navigation("Login")
-                        .IsRequired();
+                    b.Navigation("Login");
                 });
 #pragma warning restore 612, 618
         }

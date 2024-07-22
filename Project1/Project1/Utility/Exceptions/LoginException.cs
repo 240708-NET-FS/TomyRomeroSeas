@@ -1,4 +1,4 @@
-namespace LoginExampleApp.Utility.Exceptions;
+namespace ReviewShelf.Utility.Exceptions;
 
 [Serializable]
 public class LoginException : Exception

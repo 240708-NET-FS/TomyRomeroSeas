@@ -10,20 +10,23 @@ public class StartUpController{
     private readonly UserService _userService;
     private readonly LoginService _loginService;
     private readonly AccountService _accountService;
+    private readonly MainMenuController _mainMenuController;
 
-    public StartUpController (UserService userService , LoginService loginService, AccountService accountService)
+    public StartUpController (UserService userService , LoginService loginService, AccountService accountService, MainMenuController mainMenuController)
     {
         _userService = userService;
         _loginService = loginService;
         _accountService = accountService;
+        _mainMenuController = mainMenuController;
+   
     }
 
     public void Start()
     {
    
-        State.isActive = true;
+        State.isActiveStartUp = true;
 
-        while(State.isActive)
+        while(State.isActiveStartUp)
         {
             Console.Clear();
             Console.WriteLine("Welcome to ReviewShelf!");
@@ -52,13 +55,13 @@ public class StartUpController{
                     break;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
-                    WaitForUser();
+                    State.WaitForUser();
                     break;
             }
         }
     }
 
-    private void Register()
+private void Register()
 {
     Console.Clear();
     Console.WriteLine("Register For Review Shelf:");
@@ -79,11 +82,11 @@ public class StartUpController{
         if (firstName == "1")
         {
             Console.WriteLine("Returning to main menu...");
-            WaitForUser();
+            State.WaitForUser();
             return; 
         }
 
-        if (ValidateName(firstName))
+        if (Validation.ValidateName(firstName))
             break;
         
         Console.WriteLine("Invalid first name. Please try again.");
@@ -99,11 +102,11 @@ public class StartUpController{
         if (lastName == "1")
         {
             Console.WriteLine("Returning to main menu...");
-            WaitForUser();
+            State.WaitForUser();
             return; 
         }
 
-        if (ValidateName(lastName))
+        if (Validation.ValidateName(lastName))
             break;
         Console.WriteLine("Invalid last name. Please try again.");
     }
@@ -119,11 +122,11 @@ public class StartUpController{
         if (username == "1")
         {
             Console.WriteLine("Returning to main menu...");
-            WaitForUser();
+            State.WaitForUser();
             return; 
         }
 
-        if (ValidateUsername(username))
+        if (Validation.ValidateUsername(username))
             break;
         Console.WriteLine("Invalid username. Please try again.");
     }
@@ -138,11 +141,11 @@ public class StartUpController{
         if (password == "1")
         {
             Console.WriteLine("Returning to main menu...");
-            WaitForUser();
+            State.WaitForUser();
             return; 
         }
 
-        if(ValidatePassword(password))
+        if(Validation.ValidatePassword(password))
             break;
         Console.WriteLine("Invalid Password. Please try again.");
     }
@@ -156,7 +159,7 @@ public class StartUpController{
         if (password == "1")
         {
             Console.WriteLine("Returning to main menu...");
-            WaitForUser();
+            State.WaitForUser();
             return; 
         }
 
@@ -168,19 +171,18 @@ public class StartUpController{
     
         try
         {
-        // _userService.CreateUser(firstName, lastName, username, password); // Implement this method in your UserService
-        _accountService.CreateUserWithLogin(CapitalizeFirstLetter(firstName), CapitalizeFirstLetter(lastName), username, password);
+        _accountService.CreateUserWithLogin(Validation.CapitalizeFirstLetter(firstName), Validation.CapitalizeFirstLetter(lastName), username, password);
         Console.WriteLine("------------------------");
         Console.WriteLine("Account created successfully!");
-        Console.WriteLine($"Welcome { CapitalizeFirstLetter(firstName)}  {lastName} , username: {username}");
-        WaitForUser();
+        Console.WriteLine($"Welcome { Validation.CapitalizeFirstLetter(firstName)}  {lastName} , username: {username}");
+        State.WaitForUser();
         break;
         }
         
         catch (Exception ex)
         {
         Console.WriteLine($"Error creating account: {ex.Message}");
-        WaitForUser();;
+        State.WaitForUser();;
         break;          
         }
  
@@ -188,17 +190,81 @@ public class StartUpController{
 
     }
 
-    private void Login()
+  private void Login()
+{
+    Console.Clear();
+    Console.WriteLine("Review Shelf:");
+    Console.WriteLine("------------------------");
+    Console.WriteLine("Login");
+    Console.WriteLine("------------------------");
+    Console.WriteLine("(or press 1 to return to the main menu):");
+    Console.WriteLine("------------------------");
+
+
+    string? username;
+    while (true)
     {
-        Console.Clear();
-        Console.WriteLine("Login");
+        Console.Write("Enter username: ");
+        username = Console.ReadLine();
+        if (username == "1")
+        {
+            Console.WriteLine("Returning to main menu...");
+            State.WaitForUser();
+            return; 
+        }
+
+        if (Validation.ValidateUsername(username))
+            break;
+        Console.WriteLine("Invalid username. Please try again.");
     }
 
-    private void WaitForUser()
+    string? password;
+    while (true)
     {
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
+        Console.Write("Enter password: ");
+        password = Console.ReadLine();
+        if (password == "1")
+        {
+            Console.WriteLine("Returning to main menu...");
+            State.WaitForUser();
+            return; 
+        }
+
+        if (Validation.ValidatePassword(password))
+            break;
+        Console.WriteLine("Invalid password. Please try again.");
     }
+
+    try
+    {
+        bool isAuthenticated = _loginService.Authenticate(username, password);
+        if (isAuthenticated)
+        {
+            // Save User to State
+            _userService.SetUserState(username);
+            // Proceed to the main menu
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Login successful!");
+            State.WaitForUser();
+            State.isActiveStartUp = false;
+             _mainMenuController.ShowMenu();
+            
+        }
+        else
+        {
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Login failed. Invalid username or password.");
+            State.WaitForUser();
+        }
+        
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error during login: {ex.Message}");
+        State.WaitForUser();
+    }
+}
+
 
     private void Quit()
     {
@@ -216,7 +282,7 @@ public class StartUpController{
                     Console.WriteLine("Thank you for using ReviewShelf");
                     Console.WriteLine("");
                     Console.WriteLine("....Powering OFF");
-                    State.isActive = false;
+                    State.isActiveStartUp = false;
                     break;
                 case "N":
                 case "n":
@@ -225,82 +291,12 @@ public class StartUpController{
                 default: 
                     Console.WriteLine("------------------------");
                     Console.WriteLine("Invalid choice. Please try again.");
-                    WaitForUser();
+                    State.WaitForUser();
                     Quit();
                     break;
             }           
            
     }
 
-     private bool ValidateName(string? name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                Console.WriteLine("Name cannot be empty.");
-                return false;
-            }
-            if (name.Length < 2 || name.Length > 20)
-            {
-                Console.WriteLine("Name must be between 2 and 20 characters long.");
-                return false;
-            }
-            if (!Regex.IsMatch(name, @"^[a-zA-Z\s\-']+$"))
-            {
-                Console.WriteLine("Name can only contain letters, spaces, hyphens, and apostrophes.");
-                return false;
-            }
-            return true;
-        }
-
-    private bool ValidateUsername(string? username)
-    {
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            Console.WriteLine("Username cannot be empty.");
-            return false;
-        }
-        else if (username.Length < 3)
-        {
-            Console.WriteLine("Username must be at least 3 characters long.");
-            return false;
-        }
-        else if (username.Length > 20)
-        {
-            Console.WriteLine("Username cannot be more than 20 characters long.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool ValidatePassword(string? password)
-    {
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            Console.WriteLine("Password cannot be empty.");
-            return false;
-        }
-        else if (password.Length < 6)
-        {
-            Console.WriteLine("Password must be at least 6 characters long.");
-            return false;
-        }else if(password.Length > 20)
-        {
-            Console.WriteLine("Password cannot be more than 20 characters long.");
-            return false;
-        }
-
-        return true;
-    }
-    
-
-    public static string? CapitalizeFirstLetter(string? name)
-{
-    if (string.IsNullOrWhiteSpace(name))
-    {
-       return name;
-    }
-
-    return char.ToUpper(name[0]) + name.Substring(1);
-}
+  
 }
