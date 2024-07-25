@@ -20,7 +20,6 @@ public class BookReviewService: IService<BookReview>{
             if (!userId.HasValue)
                 throw new ArgumentNullException(nameof(userId), "User ID cannot be null.");
 
-
             if (string.IsNullOrEmpty(bookTitle))
                 throw new ArgumentNullException(nameof(bookTitle), "Book title cannot be null or empty.");
             
@@ -57,14 +56,60 @@ public class BookReviewService: IService<BookReview>{
             }
         }
 
-    public void Delete(BookReview item)
+  
+
+    public BookReview Update(int bookreviewId, int? userId, string bookTitle, string genre, string reviewText)
     {
-        throw new NotImplementedException();
+        try{
+        BookReview result = GetBookReviewById(bookreviewId, userId);
+
+        result.BookTitle = bookTitle;
+        result.Genre = genre;
+        result.Review = reviewText;
+
+        _bookReviewDao.Update(result);
+
+        return result;
+        }catch(Exception ex){
+            throw new BookReviewCreationException("Failed to Update Book Review", ex);
+        }
     }
 
-    public void Update(BookReview item)
+    public void Delete(int bookreviewId, int? userId)
     {
-        throw new NotImplementedException();
+        try{
+            BookReview result = GetBookReviewById(bookreviewId, userId);
+            _bookReviewDao.Delete(result);
+
+        }catch(Exception ex)
+        {
+            throw new BookReviewCreationException($"Failed to delete Book Review", ex);
+        }
+       
+    }
+
+    public BookReview GetBookReviewById(int bookreviewId, int? userId)
+    {
+        // Ensure params have a value
+        if (!userId.HasValue)
+                throw new ArgumentNullException(nameof(userId), "User ID cannot be null.");
+
+        try
+        {
+        BookReview review =  _bookReviewDao.GetById(bookreviewId);
+
+        // Check if the book review belongs to the specified user
+        if (review.UserId != userId)
+            throw new UnauthorizedAccessException("You do not have access to this review. Please try another ID");
+
+        return review;
+
+        }catch(Exception ex)
+        {
+            throw new ReviewNotFoundException("Failed to get Book Review", ex);
+        }
+
+        
     }
 
      public ICollection<BookReview> GetReviewsByUserId(int? userId)
@@ -79,7 +124,7 @@ public class BookReviewService: IService<BookReview>{
 
     public ICollection<BookReview> GetAll(){
 
-        throw new NotImplementedException();
+        return _bookReviewDao.GetAll();
         
     }
 

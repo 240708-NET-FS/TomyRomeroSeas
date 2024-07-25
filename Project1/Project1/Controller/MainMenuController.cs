@@ -44,7 +44,7 @@ namespace ReviewShelf.Controller
                 Console.WriteLine("");
                 Console.WriteLine("3. Delete a Book Review");
                 Console.WriteLine("");
-                Console.WriteLine("4. View Book Reviews");
+                Console.WriteLine("4. View My Book Reviews");
                 Console.WriteLine("");
                 Console.WriteLine("5. Logout");
                 Console.WriteLine("");
@@ -57,7 +57,7 @@ namespace ReviewShelf.Controller
                         CreateBookReview();
                         break;
                     case "2":
-                        //UpdateBookReview();
+                        UpdateBookReview();
                         break;
                     case "3":
                         DeleteBookReview();
@@ -77,8 +77,8 @@ namespace ReviewShelf.Controller
         }
 
 public void Logout(){
-     Console.WriteLine("------------------------");
-        Console.WriteLine("Do you want to Logout? Type Y or N");
+    Console.WriteLine("------------------------");
+    Console.WriteLine("Do you want to Logout? Type Y or N");
 
         var input = Console.ReadLine();
 
@@ -109,6 +109,40 @@ public void Logout(){
             }           
 }
 
+public void ConfirmDelete(int bookreviewId){
+    Console.WriteLine("------------------------");
+    Console.WriteLine("Are you sure you want to delete it? Type Y or N");
+
+        var input = Console.ReadLine();
+
+         switch(input)
+            {
+                case "y":
+                case "Y":
+                    Console.Clear();
+                    try{
+                    _bookReviewService.Delete(bookreviewId, State.currentUser?.UserId);
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine("Book Review Deleted Successfully");
+                    State.WaitForUser();
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine($"An error occured: {ex.Message}");
+                    }
+                    break;
+                case "N":
+                case "n":
+                    break;
+                case null:
+                default: 
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    State.WaitForUser();
+                    ConfirmDelete(bookreviewId);
+                    break;
+            }  
+}
+
 private void CreateBookReview()
 {
     Console.Clear();
@@ -116,7 +150,7 @@ private void CreateBookReview()
     Console.WriteLine("------------------------");
     Console.WriteLine("Create a Book Review:");
     Console.WriteLine("------------------------");
-    Console.WriteLine("(or press 1 to return to the main menu):");
+    Console.WriteLine("(or press 0 to return to the main menu):");
     Console.WriteLine("------------------------");
 
     // Get and validate book title
@@ -125,7 +159,7 @@ private void CreateBookReview()
     {
         Console.Write("Enter book title: ");
         bookTitle = Console.ReadLine();
-        if (bookTitle == "1")
+        if (bookTitle == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -142,7 +176,7 @@ private void CreateBookReview()
     {
         Console.Write("Enter genre: ");
         genre = Console.ReadLine();
-        if (genre == "1")
+        if (genre == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -159,7 +193,7 @@ private void CreateBookReview()
     {
         Console.Write("Enter review: ");
         reviewText = Console.ReadLine();
-        if (reviewText == "1")
+        if (reviewText == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -172,7 +206,6 @@ private void CreateBookReview()
 
     try
     {
-
         _bookReviewService.Create(State.currentUser?.UserId, bookTitle, genre, reviewText);
         Console.WriteLine("Book review created successfully!");
     }
@@ -184,92 +217,177 @@ private void CreateBookReview()
     State.WaitForUser();
 }
        
-    // private void UpdateBookReview()
-    // {
-    // Console.Clear();
-    // Console.WriteLine("Update Book Review:");
-    // Console.WriteLine("------------------------");
+private void UpdateBookReview()
+{
+    Console.Clear();
+    Console.WriteLine("Review Shelf:");
+    Console.WriteLine("------------------------");
+    Console.WriteLine("Update Book Reviews:");
+    Console.WriteLine("------------------------");   
+    Console.WriteLine("(or press 0 to return to the main menu):");
+    Console.WriteLine("------------------------");
 
-    // // Get review ID from user
-    // Console.Write("Enter Review ID: ");
-    // if (!int.TryParse(Console.ReadLine(), out int reviewId))
-    // {
-    //     Console.WriteLine("Invalid Review ID.");
-    //     return;
-    // }
+    string? input;
+    while (true)
+                {
+                    Console.WriteLine("Enter the ID of Book Review:");
+                    input = Console.ReadLine();
+                    if (input == "0")
+                    {
+                        Console.WriteLine("Returning to main menu...");
+                        State.WaitForUser();
+                        return;
+                    }
+                    if (Validation.ValidateInteger(input))
+                        break;
+                    Console.WriteLine("Invalid ID. Please try again.");
+            }
+            
+            try
+            {
+                bool success = int.TryParse(input, out int id);
 
-    // // Get updated details from user
-    // Console.Write("Enter new Book Title: ");
-    // var bookTitle = Console.ReadLine();
+                if (success)
+                {
+                    BookReview bookReview = _bookReviewService.GetBookReviewById(id, State.currentUser?.UserId);
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine(bookReview.ToString());
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine("(Info: Leaving fields empty will retain their original values)");
 
-    // Console.Write("Enter new Genre: ");
-    // var genre = Console.ReadLine();
+                    string? bookTitle;
+                    while (true)
+                    {
+                        Console.Write("Enter new book title: ");
+                        bookTitle = Console.ReadLine();
+                        if (bookTitle == "0")
+                        {
+                            Console.WriteLine("Returning to main menu...");
+                            State.WaitForUser();
+                            return;
+                        }else if(string.IsNullOrWhiteSpace(bookTitle))
+                        {
+                            bookTitle = bookReview.BookTitle;
+                        }if (Validation.ValidateBookTitle(bookTitle))
+                            break;
+                        Console.WriteLine("Invalid book title. Please try again.");
+                    }
+                    
+                    string? genre;
+                    while (true)
+                    {
+                        Console.Write("Enter new genre: ");
+                        genre = Console.ReadLine();
+                        if (genre == "0")
+                        {
+                            Console.WriteLine("Returning to main menu...");
+                            State.WaitForUser();
+                            return;
+                        }
+                        else if(string.IsNullOrWhiteSpace(genre))
+                        {
+                            genre = bookReview.Genre;
+                        }
+                        if (Validation.ValidateGenre(genre))
+                            break;
+                        Console.WriteLine("Invalid genre. Please try again.");
+                    }
 
-    // Console.Write("Enter new Review Text: ");
-    // var reviewText = Console.ReadLine();
+                    // Get and validate review text
+                    string? reviewText;
+                    while (true)
+                    {
+                        Console.Write("Enter new review: ");
+                        reviewText = Console.ReadLine();
+                        if (reviewText == "0")
+                        {
+                            Console.WriteLine("Returning to main menu...");
+                            State.WaitForUser();
+                            return;
+                        }
+                        else if(string.IsNullOrWhiteSpace(reviewText))
+                        {
+                            reviewText = bookReview.Review;
+                        }
+                        if (Validation.ValidateReviewText(reviewText))
+                            break;
+                        Console.WriteLine("Invalid review text. Please try again.");
+                    }
 
-    // // Validate input
-    // if (string.IsNullOrEmpty(bookTitle) || string.IsNullOrEmpty(genre) || string.IsNullOrEmpty(reviewText))
-    // {
-    //     Console.WriteLine("All fields must be filled.");
-    //     return;
-    // }
+            BookReview result = _bookReviewService.Update(id, State.currentUser?.UserId, bookTitle, genre, reviewText);
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Book review updated successfully!"); 
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Result: ");
+            Console.WriteLine(result.ToString());
+            State.WaitForUser();
 
-    // // Create the updated BookReview object
-    // var updatedReview = new BookReview
-    // {
-    //     BookReviewId = reviewId,
-    //     BookTitle = bookTitle,
-    //     Genre = genre,
-    //     Review = reviewText,
-    //     UserId = State.currentUser?.UserId ?? 0 // Assuming you want to keep the same user ID
-    // };
+            }else{
+                Console.WriteLine("Error: ID is not a number.");
+                State.WaitForUser();
+                return;
+            }
 
-    // try
-    // {
-    //     // Call the service method to update the review
-    //     _bookReviewService.Update(updatedReview);
-    //     Console.WriteLine("Book review updated successfully.");
-    // }
-    // catch (KeyNotFoundException ex)
-    // {
-    //     Console.WriteLine(ex.Message);
-    // }
-    // catch (Exception ex)
-    // {
-    //     Console.WriteLine($"An error occurred: {ex.Message}");
-    // }
-
-    // State.WaitForUser();
-    // }
-
-
-        private void DeleteBookReview()
-        {
-            // Console.Clear();
-            // Console.WriteLine("Delete a Book Review:");
-            // Console.WriteLine("------------------------");
-
-            // Console.Write("Enter the ID of the review to delete: ");
-            // if (int.TryParse(Console.ReadLine(), out int reviewId))
-            // {
-            //     try
-            //     {
-            //         _bookReviewService.DeleteReview(reviewId);
-            //         Console.WriteLine("Book review deleted successfully!");
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         Console.WriteLine($"Error deleting book review: {ex.Message}");
-            //     }
-            // }
-            // else
-            // {
-            //     Console.WriteLine("Invalid review ID.");
-            // }
-
-            // WaitForUser();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Updating Book Review: {ex.Message}");
+                State.WaitForUser();
+            }
         }
+
+     private void DeleteBookReview()
+        {
+            string? input;
+
+            Console.Clear();
+            Console.WriteLine("Review Shelf:");
+            Console.WriteLine("------------------------");
+            Console.WriteLine("Delete a Book Review:");
+            Console.WriteLine("------------------------");
+            Console.WriteLine("(or press 0 to return to the main menu):");
+            Console.WriteLine("------------------------");
+           
+            while (true)
+                {
+                    Console.WriteLine("Enter Review ID:");
+                    input = Console.ReadLine();
+                    if (input == "0")
+                    {
+                        Console.WriteLine("Returning to main menu...");
+                        State.WaitForUser();
+                        return;
+                    }
+                    if (Validation.ValidateInteger(input))
+                        break;
+                    Console.WriteLine("Invalid ID. Please try again.");
+            }
+            
+            try
+            {
+                bool success = int.TryParse(input, out int id);
+
+                if (success)
+                {
+                    BookReview bookReview = _bookReviewService.GetBookReviewById(id, State.currentUser?.UserId);
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine("Book Review Found");
+                    Console.WriteLine(bookReview.ToString());
+                    ConfirmDelete(id);
+                }else{
+                    Console.WriteLine("Error: ID is not a number.");
+                    State.WaitForUser();
+                    return;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting book review: {ex.Message}");
+                State.WaitForUser();
+            }
+
+        }   
 
         private void ViewBookReviews()
         {
@@ -281,16 +399,17 @@ private void CreateBookReview()
 
             var reviews = _bookReviewService.GetReviewsByUserId(State.currentUser?.UserId);
 
-            if (reviews == null || !reviews.Any())
+            if (reviews == null || reviews.Count == 0)
                 {
-                    Console.WriteLine("No Reviews Have Been Made.");
+                    Console.WriteLine("No Reviews Found.");
                     Console.WriteLine();
                 }
                 else
                 {
                     foreach (var review in reviews)
                     {
-                        Console.WriteLine($"ID: {review.BookReviewId}, Title: {review.BookTitle}, Review: {review.Review}");
+                        Console.WriteLine(review.ToString());
+                        Console.WriteLine("------------------------");
                     }
                 }
 

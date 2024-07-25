@@ -44,7 +44,7 @@ public class Program{
             _bookReviewService = new BookReviewService(_bookReviewDao);
 
             _mainMenuController = new MainMenuController(_bookReviewService, this);
-            _startUpController = new StartUpController(_userService, _loginService, _accountService, _mainMenuController);
+            _startUpController = new StartUpController(_userService, _loginService, _accountService, _mainMenuController, _bookReviewService);
         }
 
         public void Start()

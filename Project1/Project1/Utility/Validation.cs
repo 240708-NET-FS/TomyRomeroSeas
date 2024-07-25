@@ -131,4 +131,21 @@ public class Validation
         return true;
     }
 
+     public static bool ValidateInteger(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Console.WriteLine("(Warning): Input cannot be empty.");
+            return false;
+        }
+        
+        if (!int.TryParse(input, out _))
+        {
+            Console.WriteLine("(Warning): Input must be a valid integer.");
+            return false;
+        }
+
+        return true;
+    }
+
 }

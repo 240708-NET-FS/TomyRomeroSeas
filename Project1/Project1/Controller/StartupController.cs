@@ -10,13 +10,15 @@ public class StartUpController{
     private readonly UserService _userService;
     private readonly LoginService _loginService;
     private readonly AccountService _accountService;
+    private readonly BookReviewService _bookReviewService;
     private readonly MainMenuController _mainMenuController;
 
-    public StartUpController (UserService userService , LoginService loginService, AccountService accountService, MainMenuController mainMenuController)
+    public StartUpController (UserService userService , LoginService loginService, AccountService accountService, MainMenuController mainMenuController, BookReviewService bookReviewService)
     {
         _userService = userService;
         _loginService = loginService;
         _accountService = accountService;
+        _bookReviewService = bookReviewService;
         _mainMenuController = mainMenuController;
    
     }
@@ -36,7 +38,9 @@ public class StartUpController{
             Console.WriteLine("");
             Console.WriteLine("2. Login");
             Console.WriteLine("");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Book Reviews");
+            Console.WriteLine("");
+            Console.WriteLine("4. Exit");
             Console.WriteLine("");
            
             string? choice = Console.ReadLine();
@@ -44,13 +48,15 @@ public class StartUpController{
              switch (choice)
             {
                 case "1":
-                    Console.WriteLine($"You chose: {choice}");
                     Register();
                     break;
                 case "2":
                     Login();
                     break;
                 case "3":
+                    AllReviews();
+                    break;
+                case "4":
                     Quit();
                     break;
                 default:
@@ -68,7 +74,7 @@ private void Register()
     Console.WriteLine("------------------------");
     Console.WriteLine("Create Account");
     Console.WriteLine("------------------------");
-    Console.WriteLine("(or press 1 to return to the main menu):");
+    Console.WriteLine("(or press 0 to return to the main menu):");
     Console.WriteLine("------------------------");
 
     while(true)
@@ -79,7 +85,7 @@ private void Register()
     {
         Console.Write("Enter your first name:");
         firstName = Console.ReadLine();
-        if (firstName == "1")
+        if (firstName == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -99,7 +105,7 @@ private void Register()
         Console.WriteLine("------------------------");
         Console.Write("Enter your last name:");
         lastName = Console.ReadLine();
-        if (lastName == "1")
+        if (lastName == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -119,7 +125,7 @@ private void Register()
         Console.WriteLine("Username must be between 3 and 20 characters long and cannot be empty.");
         Console.Write("Enter username:");
         username = Console.ReadLine();
-        if (username == "1")
+        if (username == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -138,7 +144,7 @@ private void Register()
         Console.WriteLine("------------------------");
         Console.Write("Enter password: ");
         password = Console.ReadLine();
-        if (password == "1")
+        if (password == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -156,7 +162,7 @@ private void Register()
         Console.WriteLine("------------------------");
         Console.Write("Confirm password: ");
         confirmPassword = Console.ReadLine();
-        if (password == "1")
+        if (password == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -190,6 +196,33 @@ private void Register()
 
     }
 
+    private void AllReviews()
+    {
+    Console.Clear();
+    Console.WriteLine("Review Shelf:");
+    Console.WriteLine("------------------------");
+    Console.WriteLine("View User Created Reviews");
+    Console.WriteLine("------------------------");
+    
+    var reviews = _bookReviewService.GetAll();
+
+            if (reviews == null || reviews.Count == 0)
+                {
+                    Console.WriteLine("No Reviews Found.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    foreach (var review in reviews)
+                    {
+                        Console.WriteLine(review.ToStringUser());
+                        Console.WriteLine("------------------------");
+                    }
+                }
+
+            State.WaitForUser();
+    }
+
   private void Login()
 {
     Console.Clear();
@@ -197,7 +230,7 @@ private void Register()
     Console.WriteLine("------------------------");
     Console.WriteLine("Login");
     Console.WriteLine("------------------------");
-    Console.WriteLine("(or press 1 to return to the main menu):");
+    Console.WriteLine("(or press 0 to return to the main menu):");
     Console.WriteLine("------------------------");
 
 
@@ -206,7 +239,7 @@ private void Register()
     {
         Console.Write("Enter username: ");
         username = Console.ReadLine();
-        if (username == "1")
+        if (username == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();
@@ -223,7 +256,7 @@ private void Register()
     {
         Console.Write("Enter password: ");
         password = Console.ReadLine();
-        if (password == "1")
+        if (password == "0")
         {
             Console.WriteLine("Returning to main menu...");
             State.WaitForUser();

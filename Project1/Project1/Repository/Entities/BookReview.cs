@@ -10,6 +10,11 @@ public class BookReview
 
     public override string ToString()
     {
-        return $"{BookReviewId}: {BookTitle} - {Review}";
+        return $"ID: {BookReviewId}, Genre: {Genre}, Title: {BookTitle}, Review: {Review}";
+    }
+
+    public string ToStringUser()
+    {
+        return $"User:{User?.UserName}, ID: {BookReviewId}, Genre: {Genre}, Title: {BookTitle}, Review: {Review}";
     }
 }

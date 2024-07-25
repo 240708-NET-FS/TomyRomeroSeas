@@ -34,8 +34,8 @@ namespace Project1.Tests
                 new object[] { null, false },
                 new object[] { "", false },
                 new object[] { "AB", false },
-                new object[] { new string('U', 21), false },  // 21 characters long
-                new object[] { new string('U', 3), true }  // Exactly 3 characters long
+                new object[] { new string('U', 21), false },  
+                new object[] { new string('U', 3), true }  
             };
 
             public static IEnumerable<object[]> ValidUsernames =>
@@ -51,8 +51,8 @@ namespace Project1.Tests
                 new object[] { null, false },
                 new object[] { "", false },
                 new object[] { "short", false },
-                new object[] { new string('P', 21), false },  // 21 characters long
-                new object[] { new string('P', 6), true }  // Exactly 6 characters long
+                new object[] { new string('P', 21), false },  
+                new object[] { new string('P', 6), true }  
             };
 
             public static IEnumerable<object[]> ValidPasswords =>
@@ -121,6 +121,26 @@ namespace Project1.Tests
             new object[] { "I thoroughly enjoyed the plot and characters.", true }
         };
 
+        public static IEnumerable<object[]> InvalidIntegers =>
+        new List<object[]>
+        {
+            new object[] { null, false },
+            new object[] { "", false },
+            new object[] { " ", false },
+            new object[] { "123.45", false },
+            new object[] { "abc", false },
+            new object[] { "1e4", false }
+        };
+
+        public static IEnumerable<object[]> ValidIntegers =>
+        new List<object[]>
+        {
+            new object[] { "123", true },
+            new object[] { "-456", true },
+            new object[] { "0", true },
+            new object[] { "789", true }
+        };
+
         [Theory]
         [MemberData(nameof(InvalidNames))]
         [MemberData(nameof(ValidNames))]
@@ -186,6 +206,15 @@ namespace Project1.Tests
             bool isValid = Validation.ValidateReviewText(reviewText);
 
 
+            Assert.Equal(expectedIsValid, isValid);
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidIntegers))]
+        [MemberData(nameof(ValidIntegers))]
+        public void ValidateInteger_ShouldReturnExpectedResult(string input, bool expectedIsValid)
+        {
+            bool isValid = Validation.ValidateInteger(input);
             Assert.Equal(expectedIsValid, isValid);
         }
     }
