@@ -204,6 +204,7 @@ private void Register()
     Console.WriteLine("View User Created Reviews");
     Console.WriteLine("------------------------");
     
+    try{
     var reviews = _bookReviewService.GetAll();
 
             if (reviews == null || reviews.Count == 0)
@@ -219,8 +220,12 @@ private void Register()
                         Console.WriteLine("------------------------");
                     }
                 }
-
-            State.WaitForUser();
+    }catch(Exception ex)
+    {
+        Console.WriteLine("Error Fetching Book Reviews, Please Try Again.", ex);
+        Console.WriteLine("------------------------");
+    }
+        State.WaitForUser();
     }
 
   private void Login()

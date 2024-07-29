@@ -114,17 +114,29 @@ public class BookReviewService: IService<BookReview>{
 
      public ICollection<BookReview> GetReviewsByUserId(int? userId)
     {
-            // Ensure userId has a value
+        try{
+             // Ensure userId has a value
             if (!userId.HasValue)
                 throw new ArgumentNullException(nameof(userId), "User ID cannot be null.");
 
             // Call DAO method to get reviews by user ID
             return _bookReviewDao.GetReviewsByUserId(userId.Value);
+        }catch(Exception ex)
+        {
+            throw new Exception("Failed to get book reveiw by user ID", ex);
+        }
+
     }
 
     public ICollection<BookReview> GetAll(){
 
-        return _bookReviewDao.GetAll();
+        try{
+            return _bookReviewDao.GetAll();
+        }catch(Exception ex)
+        {
+            throw new Exception("Failed to get book reviews.", ex);
+        }
+        
         
     }
 

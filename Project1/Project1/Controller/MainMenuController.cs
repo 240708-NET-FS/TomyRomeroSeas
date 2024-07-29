@@ -397,6 +397,7 @@ private void UpdateBookReview()
             Console.WriteLine("View Book Reviews:");
             Console.WriteLine("------------------------");
 
+            try{
             var reviews = _bookReviewService.GetReviewsByUserId(State.currentUser?.UserId);
 
             if (reviews == null || reviews.Count == 0)
@@ -412,8 +413,14 @@ private void UpdateBookReview()
                         Console.WriteLine("------------------------");
                     }
                 }
-
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error occured fetching book reviews, please try again.", ex);
+                Console.WriteLine("------------------------");
+            }
             State.WaitForUser();
+            
         }
 
         
